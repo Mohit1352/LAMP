@@ -1,0 +1,11 @@
+from matrix import *
+A=matrix(3,2)
+A.fill([1,4,6,8,9,2])
+A.info()
+B=matrix(2,2,[1,2,3,4])
+B.info()
+C=matrix(5,3,[1,2,3,4,5,6,7,8,9,0,1,2,3,4,5])
+C.info()
+D=matrix(3,5,[1,2,3,4,5,6,7,8,9,0,1,2,3,4,5])
+D.info()
+input()
