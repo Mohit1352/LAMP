@@ -10,13 +10,13 @@ class matrix:
 		else:
 			self.col=n
 		x=f"Matrix created. {m}x{n}"
-		defset=1
-		rwset=0
+		self.defset=1
+		self.rwset=0
 		#ANSITerminal only: print('\033[1;32m'+x+'\033[1;m')
 		if deflist is None:
 			deflist=[]
 			self.deflist=deflist
-			defset=0
+			self.defset=0
 		else:
 			self.deflist=deflist
 		if rowwise is None:
@@ -24,19 +24,21 @@ class matrix:
 			self.rowwise=rowwise
 		else:
 			self.rowwise=rowwise
-			rwset=1
-		if(defset==0 and rwset==1):
+			self.rwset=1
+		if(self.defset==0 and self.rwset==1):
 			self.setdeflist()
+			self.defset=1
 		fill=0
-		if(rwset==0 and defset==1):
+		if(self.rwset==0 and self.defset==1):
 			fill=self.fill(deflist)
+			self.rwset=1
 		if displ==1:
 			print(x)
 			if fill==0:
 				#print('\033[1;31m'+"Warning: Matrix is not filled yet. Use \nobj.fill(linear list(left to right,up to down))\nto fill the matrix."+'\033[1;0m');
 				print("Warning: Matrix is not filled yet. Use \nobj.fill(linear list(left to right,up to down))\nto fill the matrix.")
 			else:
-				disp(self)
+				self.disp()
 	
 	def __str__(self):
 		'''Returns a value if object is printed'''
@@ -78,6 +80,9 @@ class matrix:
 					l.append(self.rowwise[i][j])
 		return matrix(self.row,self.col,l)
 	
+	def copymat(self):
+		return matrix(self.row,self.col,self.deflist)
+	
 	def det(self):
 		'''Returns determinant of a matrix (NA if not applicable, number if applicable)'''
 		if not self.issquare():
@@ -88,7 +93,7 @@ class matrix:
 			else:
 				d=0
 				for i in range(0,self.col):
-					d=d+(self.det(self.cofactor(0,i))*i)
+					d=d+(((self.cofactor(0,i)).det())*i)
 				return d
 	
 	def disp(self):
@@ -97,7 +102,6 @@ class matrix:
 			for j in range(0,self.col):
 				print(self.rowwise[i][j],end=' ')
 			print()
-		print("\n")
 	
 	def fill(self,deflist):
 		'''Fills a matrix \'self\' if a list of numbers \'deflist\' is defined.'''
@@ -109,20 +113,66 @@ class matrix:
 					if j==0:
 						self.rowwise.append([])
 					self.rowwise[i].append(deflist[i*self.col + j])
+		self.rwset=1
+		if(self.defset==0 and self.rwset==1):
+			self.setdeflist()
 	
 	def geliminate(self):
-		'''Performs Gaussian elimination on the matrix and returns the resulting matrix.'''
-		pass
+		'''Performs Gaussian elimination on the matrix and returns the resulting matrices.'''
+		mat=self.copymat()
+		pivot=0
+		l=[]
+		el=[]
+		maxr=0
+		pivots=0
+		for i in range(0,self.col):
+			pivot=mat.rowwise[i][i]
+			if(i>=maxr):
+				maxr=i;
+			if pivot==0 and i==0:
+				for j in range(i,mat.row):
+					if mat.rowwise[j][i]!=0:
+						mat=mat.rowswap(i,j)
+						break
+			elif pivot==0 and i!=0:
+				for j in range(i,mat.row):
+					if mat.rowwise[j][i]!=0:
+						pivot=mat.rowwise[j][i]
+						maxr=j
+						break
+			pivots=pivots+1
+			for j in range(i+1,mat.row):
+				lterm=-mat.rowwise[j][i]/pivot
+				li=[lterm,j,i]
+				for k in range(0,mat.col):
+					mat.rowwise[j][k]=mat.rowwise[j][k]+lterm*mat.rowwise[i][k]
+				l.append(li)
+			if maxr==self.row-1:
+				break
+		for i in range(0,pivots):
+			for j in range(0,pivots):
+				if i==j:
+					el.append(1)
+				elif j>i:
+					el.append(0)
+				else:
+					for k in l:
+						if k[1]==i and k[2]==j:
+							el.append(k[0])
+							break
+		return mat,matrix(pivots,pivots,el)		
 	
 	def info(self):
 		'''Displays various attributes of the matrix \'self\''''
-		print(f"Matrix:\n{self.row}x{self.col}\n")
+		print(f"Matrix:\n{self.row}x{self.col}")
 		self.disp()
 		print(f"Determinant: {self.det()}")
-		self.transpose()
+		print("Transpose:")
+		self.transpose().disp()
+		print("Inverse: NPY")
 		self.inverse()
 	
-	def inputfill(self):
+	def inputfill(self): #needs fix
 		'''Inputs a matrix row wise, and sets parameters automatically with the first row input.'''
 		print("Enter your matrix row wise:\n(separate entries with spaces, end row with newline)\n")
 		i=0
@@ -143,12 +193,13 @@ class matrix:
 						else:
 							print("Row length mismatch! Reenter with same length as row 1.")
 							continue
+					break
 				else:
 					bc=1
 					break
 				self.rowwise.append(s)
 				i=i+1
-				jc=0
+			jc=0
 			if(bc==1):
 				break
 			for j in s:
@@ -158,6 +209,7 @@ class matrix:
 				self.deflist[i].append(j)
 			if(i==1):
 				self.col=jc
+				print(jc)
 		self.row=i
 		print("Entry is done.")
 		self.disp()
@@ -187,7 +239,7 @@ class matrix:
 				for j in range(0,c):
 					sum=0
 					for k in range(0,a.col):
-						sum=sum+(a.rowwise[i][k]*b.rowwise[j][k])
+						sum=sum+(a.rowwise[i][k]*b.rowwise[k][j])
 					l.append(sum)
 			return matrix(r,c,l)
 		else:
@@ -197,12 +249,12 @@ class matrix:
 		'''Combines the smul and mmul features, multiplies a quantity with the other quantity and returns answer, \"NA\" if incompatible.'''
 		if(isinstance(a,matrix)):
 			if(isinstance(b,matrix)):
-				return mmul(a,b)
+				return a.mmul(b)
 			else:
-				return smul(a,b)
+				return a.smul(b)
 		else:
 			if(isinstance(b,matrix)):
-				return smul(b,a)
+				return b.smul(a)
 			else:
 				return a*b
 	
@@ -237,6 +289,9 @@ class matrix:
 			for j in range(0,self.col):
 				l.append(self.rowwise[i][j])
 		self.deflist=l
+		self.defset=1
+		if(self.rwset==0 and self.defset==1):
+			fill=self.fill(deflist)
 	
 	def smul(self,scalar):
 		'''Returns a matrix having all terms of \'self\' multiplied by a scalar'''
@@ -257,7 +312,7 @@ class matrix:
 			for i in range(0,a.row*a.col):
 				l.append(a.deflist[i]-b.deflist[i])
 				m.append(b.deflist[i]-a.deflist[i])
-			return matrix(a.row,a.col,l,disp=1),matrix(a.row,a.col,m,disp=1)
+			return matrix(a.row,a.col,l,displ=1),matrix(a.row,a.col,m,displ=1)
 		else:
 			return "NA"
 	
@@ -269,4 +324,3 @@ class matrix:
 				l.append(self.rowwise[i][j])
 		t=matrix(self.col,self.row,l)
 		return t
-	
