@@ -1,17 +1,19 @@
 class matrix:
-	def __init__(self,m=None,n=None,deflist=None,rowwise=None,displ=0):
+	def __init__(self,m=None,n=None,deflist=None,rowwise=None,displ=0,mode='n'):
 		'''Constructor for matrix. (default values if not initialised are (self,1,1,[],[],0))'''
+		self.defset=1
+		self.rwset=0
 		if m is None:
 			self.row=1
 		else:
 			self.row=m
-		if n is None:
+		if n is None and mode=='n':
 			self.col=1
+		elif n is None and mode=='i':
+			self.col=self.row
 		else:
 			self.col=n
 		x=f"Matrix created. {m}x{n}"
-		self.defset=1
-		self.rwset=0
 		#ANSITerminal only: print('\033[1;32m'+x+'\033[1;m')
 		if deflist is None:
 			deflist=[]
@@ -19,22 +21,23 @@ class matrix:
 			self.defset=0
 		else:
 			self.deflist=deflist
-		if rowwise is None:
+		if(rowwise is None):
 			rowwise=[]
 			self.rowwise=rowwise
 		else:
 			self.rowwise=rowwise
 			self.rwset=1
-		if(self.defset==0 and self.rwset==1):
+		if mode=='i':
+			self.fill(self.deflist,mode='i')
+			self.fill(self.deflist)
+		if(self.defset==0 and self.rwset==1 and mode=='n'):
 			self.setdeflist()
-			self.defset=1
-		fill=0
-		if(self.rwset==0 and self.defset==1):
+		fille=0
+		if(self.rwset==0 and self.defset==1 and mode=='n'):
 			fill=self.fill(deflist)
-			self.rwset=1
 		if displ==1:
 			print(x)
-			if fill==0:
+			if fille==0:
 				#print('\033[1;31m'+"Warning: Matrix is not filled yet. Use \nobj.fill(linear list(left to right,up to down))\nto fill the matrix."+'\033[1;0m');
 				print("Warning: Matrix is not filled yet. Use \nobj.fill(linear list(left to right,up to down))\nto fill the matrix.")
 			else:
@@ -42,7 +45,7 @@ class matrix:
 	
 	def __str__(self):
 		'''Returns a value if object is printed'''
-		return f"Matrix object {self.row}x{self.col}"
+		return f"Matrix object {self.row}x{self.col}\nDefset:{self.defset}\nRWset:{self.rwset}\nDeflist:{self.deflist}\nRowwise:{self.rowwise}"
 	
 	def add(a,b):
 		'''Adds two matrices a and b and returns the resulting matrix, or \"NA\" if incompatible.'''
@@ -103,9 +106,37 @@ class matrix:
 				print(self.rowwise[i][j],end=' ')
 			print()
 	
-	def fill(self,deflist):
+	def disp2(self):
+		'''disp(), but prints elements with proper spacing.'''
+		maxv=max([len(str(x)) for x in self.deflist])
+		print(self.deflist,maxv)
+		for i in range(0,self.row):
+			for j in range(0,self.col):
+				y=self.rowwise[i][j]
+				x=y-int(y)
+				if(x==0):
+					y=int(y)
+				t=str(y)
+				s=""
+				for k in range(0,maxv-len(t)):
+					s=s+" "
+				s=s+t
+				print(s,end=' ')
+			print()
+	
+	def fill(self,deflist=None,mode='n'):
 		'''Fills a matrix \'self\' if a list of numbers \'deflist\' is defined.'''
-		if(deflist==[] or deflist is None):
+		if(mode=='i'):
+			l=[]
+			for i in range(0,self.row):
+				for j in range(0,self.col):
+					if(i==j):
+						l.append(1)
+					else:
+						l.append(0)
+			self.deflist=l
+			self.defset=1
+		elif(deflist==[] or deflist is None):
 			return 0
 		else:
 			for i in range(0,self.row):
@@ -160,6 +191,7 @@ class matrix:
 						if k[1]==i and k[2]==j:
 							el.append(k[0])
 							break
+		mat.setdeflist()
 		return mat,matrix(pivots,pivots,el)		
 	
 	def info(self):
