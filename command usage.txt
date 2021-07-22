@@ -1,71 +1,84 @@
 Command usage guide : matrix.py
 
+The matrix class gives a user the means of defining and storing a matrix, and also performing operations on them.
+
 To use the class 'matrix' and all its functions, write
-from matrix import *
-<or equivalent import option as per convenience>
+  from matrix import *
+  <or equivalent import option as per convenience>
 
 Creating a matrix object:
-The constructor of the object has such a call:
+  The constructor of the object has such a call:
 
-Suppose a matrix A is:
-1 2 3
-4 5 6
-(Order=RxC=2x3)
+  Suppose a matrix A is:
+  1 2 3
+  4 5 6
+  (Order=RxC=2x3)
 
-You can initialise an object in many ways:
-1.
-Make a list l=[1,2,3,4,5,6] 
-<elements of matrix from top-left corner, in direction left to right, top to bottom>
-write A=matrix(2,3,l)
-<general syntax: objname=matrix(r,c,deflist)>
+  You can initialise an object in many ways:
+  1.
+    Make a list 
+      l=[1,2,3,4,5,6] 
+      <elements of matrix from top-left corner, in direction left to right, top to bottom>
+    write 
+      A=matrix(2,3,l)
+    
+    <general syntax: 
+      objname=matrix(r,c,deflist) 
+      where deflist=vector(1xn matrix) of elements>
 
-2.
-Make a list of lists l=[[1,2,3],[4,5,6]]
-<row-wise entry>
-write A=matrix(2,3,rowwise=l)
-<general syntax: objname=matrix(r,c,rowwise=l)>
-<can be improved, but maybe at a later stage>
+  2.
+    Make a list of lists
+      l=[[1,2,3],[4,5,6]]
+      <row-wise entry>
+    write
+      A=matrix(2,3,rowwise=l)
+    
+    <general syntax:
+      objname=matrix(r,c,rowwise=l)
+      where rowwise=actual nested list of elements; equivalent to another matrix>
+      
+    <can be improved, but maybe at a later stage>
 
-<there is another way, but is being fixed>
--> One can simply define the matrix as A=matrix(2,3) and use functions A.fill(l)
+  <there is another way, but is being fixed>
+  -> One can simply define the matrix as A=matrix(2,3) and use functions A.fill(l)
 
 Special Matrices:
-One may initialise a nxn Identity matrix by writing Iname=matrix(n,mode='i')
-<working on more special matrices>
+  One may initialise a nxn Identity matrix by writing Iname=matrix(n,mode='i')
+  <working on more special matrices>
 
 Functions:
-If x,y are matrix objects and s is a scalar,
+  If x,y are matrix objects and s is a scalar,
 
-x.add(y) returns the sum matrix or NA
-x.subtract(y) returns differences x-y and y-x, so catch 2 values here.
-x.multiply(y or s) returns matrix multiplication xy, or gives matrix sx (same as x.mmul(y) or x.smul(s))
-x.cofactor(r,c) returns cofactor matrix of x without row x and column y
-x.det() returns the determinant of the matrix or NA
-x.transpose() returns the transpose of the matrix
-x.inverse() returns the inverse of the matrix or NA <progress>
+  x.add(y) returns the sum matrix or NA
+  x.subtract(y) returns differences x-y and y-x, so catch 2 values here.
+  x.multiply(y or s) returns matrix multiplication xy, or gives matrix sx (same as x.mmul(y) or x.smul(s))
+  x.cofactor(r,c) returns cofactor matrix of x without row x and column y
+  x.det() returns the determinant of the matrix or NA
+  x.transpose() returns the transpose of the matrix
+  x.inverse() returns the inverse of the matrix or NA <progress>
 
-x.colswap(c1,c2) returns matrix x with columns c1,c2 swapped
-x.rowswap(r1,r2) returns matrix x with rows r1,r2 swapped
+  x.colswap(c1,c2) returns matrix x with columns c1,c2 swapped
+  x.rowswap(r1,r2) returns matrix x with rows r1,r2 swapped
 
-x.geliminate() returns matrices U and L from Gaussian Elimination
-x.revgeliminate() returns matrices after reverse G.E.
-x.spaces() displays the subspaces of the matrix <progress>
-x.colspace() returns the column space of the matrix <progress>
-x.nullspace() returns the null space of the matrix <progress>
-x.rowspace() returns the row space of the matrix <progress>
-x.lnspace() returns the left null space of the matrix <progress>
+  x.geliminate() returns matrices U and L from Gaussian Elimination
+  x.revgeliminate() returns matrices after reverse G.E.
+  x.spaces() displays the subspaces of the matrix <progress>
+  x.colspace() returns the column space of the matrix <progress>
+  x.nullspace() returns the null space of the matrix <progress>
+  x.rowspace() returns the row space of the matrix <progress>
+  x.lnspace() returns the left null space of the matrix <progress>
 
-x.copymat() returns a copy of the matrix x for manipulations or safekeeping
-x.disp() displays the matrix
-x.disp2() displays the matrix with better spacing and smarter optimisations like truncating .00
+  x.copymat() returns a copy of the matrix x for manipulations or safekeeping
+  x.disp() displays the matrix
+  x.disp2() displays the matrix with better spacing and smarter optimisations like truncating .00
 
-x.fill(deflist) fills the matrix with the given deflist and predefined (defined during object creation) values of r,c
-x.info() displays basic information about the matrix ( basically outputs from various functions)
-<x.inputfill() takes input from the user and fills the matrix; is broken, fixing in progress>
+  x.fill(deflist) fills the matrix with the given deflist and predefined (defined during object creation) values of r,c
+  x.info() displays basic information about the matrix ( basically outputs from various functions)
+  <x.inputfill() takes input from the user and fills the matrix; is broken, fixing in progress>
 
 Internal Functions:
-x.setdeflist() sets the deflist of x when rowwise of x is defined
-__str__() returns a string to print(x) showing values like rowwise,deflist,rwset,defset,row,col of x
+  x.setdeflist() sets the deflist of x when rowwise of x is defined
+  __str__() returns a string to print(x) showing values like rowwise,deflist,rwset,defset,row,col of x
 
 Hope this makes the code a bit easier to understand and so a bit easier to code using these functions.
 If not, get back to me. I'll be happy to help.
